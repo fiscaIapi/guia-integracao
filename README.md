@@ -82,6 +82,8 @@ curl -X GET "https://api.fiscalapi.com.br/api/consultar?uf=MT&cpf=12345678900" \
 | Ruby | [exemplos/ruby/](exemplos/ruby/) |
 | cURL | [exemplos/curl/](exemplos/curl/) |
 
+**Consulta em lote:** [exemplos/python/consulta_ie_lote.py](exemplos/python/consulta_ie_lote.py) consulta a IE de milhares de CPFs e CNPJs em todos os estados, em paralelo e dentro do limite por minuto da conta, salvando o resultado em CSV.
+
 ## Autenticacao
 
 Todas as requisicoes exigem a header `X-API-Key`:
