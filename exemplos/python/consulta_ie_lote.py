@@ -12,7 +12,10 @@ Uso:
     python consulta_ie_lote.py documentos.csv
 
 documentos.csv: um CPF ou CNPJ por linha, na primeira coluna, com ou sem
-mascara. Linhas repetidas ou invalidas sao ignoradas.
+mascara. Zeros a esquerda perdidos no Excel sao recolocados (CNPJ com 13
+digitos, CPF com 10...), e o CNPJ alfanumerico e aceito. Linhas repetidas
+sao ignoradas; documentos invalidos (digito verificador errado) sao
+contados e listados no inicio da execucao.
 
 Saida:
     resultado.csv    uma linha por IE encontrada; documento sem IE em nenhum
@@ -28,6 +31,8 @@ Opcoes:
     --por-minuto N   teto de chamadas iniciadas por minuto (padrao 115; o
                      limite da conta aparece no header X-RateLimit-Limit)
 """
+
+from __future__ import annotations
 
 import argparse
 import asyncio
@@ -56,15 +61,64 @@ class SemCredito(Exception):
     pass
 
 
-def ler_documentos(caminho: str) -> list[str]:
-    docs = []
+def _dv_cnpj(base: str) -> str:
+    """Digitos verificadores do CNPJ (numerico ou alfanumerico: cada
+    caractere vale seu codigo ASCII - 48, como define a Receita)."""
+    for pesos in ([5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2],
+                  [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]):
+        resto = sum((ord(c) - 48) * p for c, p in zip(base, pesos)) % 11
+        base += "0" if resto < 2 else str(11 - resto)
+    return base[-2:]
+
+
+def cnpj_valido(doc: str) -> bool:
+    return (len(doc) == 14 and doc[:12].isalnum() and doc[12:].isdigit()
+            and len(set(doc)) > 1 and _dv_cnpj(doc[:12]) == doc[12:])
+
+
+def cpf_valido(doc: str) -> bool:
+    if len(doc) != 11 or not doc.isdigit() or len(set(doc)) == 1:
+        return False
+    for n in (9, 10):
+        soma = sum(int(doc[i]) * (n + 1 - i) for i in range(n))
+        if (soma * 10 % 11) % 10 != int(doc[n]):
+            return False
+    return True
+
+
+def normalizar(valor: str) -> str | None:
+    """CPF/CNPJ com os zeros a esquerda de volta, ou None se invalido.
+
+    Planilha salva no Excel perde o zero inicial (CNPJ 01.234.567/0001-89
+    vira 1234567000189). O digito verificador decide se e CPF ou CNPJ."""
+    bruto = re.sub(r"[^0-9A-Za-z]", "", valor).upper()
+    if not bruto or len(bruto) > 14:
+        return None
+    if not bruto.isdigit():
+        return bruto if cnpj_valido(bruto) else None
+    cpf, cnpj = bruto.zfill(11), bruto.zfill(14)
+    e_cpf = len(bruto) <= 11 and cpf_valido(cpf)
+    e_cnpj = cnpj_valido(cnpj)
+    if e_cpf and e_cnpj:
+        # Os dois digitos batem (ex.: CNPJ 00.000.000/0001-91 vira "191"):
+        # CPF perde no maximo 2 zeros; menos de 9 digitos e CNPJ.
+        return cpf if len(bruto) >= 9 else cnpj
+    return cpf if e_cpf else (cnpj if e_cnpj else None)
+
+
+def ler_documentos(caminho: str) -> tuple[list[str], list[str]]:
+    """(documentos validos sem repeticao, valores invalidos)."""
+    docs, invalidos = [], []
     with open(caminho, newline="", encoding="utf-8-sig") as arquivo:
         for linha in csv.reader(arquivo):
-            if linha:
-                digitos = re.sub(r"\D", "", linha[0])
-                if len(digitos) in (11, 14):
-                    docs.append(digitos)
-    return list(dict.fromkeys(docs))
+            if not linha or not re.search(r"\d", linha[0]):
+                continue  # linha vazia ou cabecalho
+            doc = normalizar(linha[0])
+            if doc:
+                docs.append(doc)
+            else:
+                invalidos.append(linha[0].strip())
+    return list(dict.fromkeys(docs)), invalidos
 
 
 def ja_consultados(caminho: str) -> set[str]:
@@ -184,7 +238,10 @@ async def main() -> int:
     if not chave:
         print("Defina a variavel FISCALAPI_KEY com a sua chave de API.", file=sys.stderr)
         return 2
-    docs = ler_documentos(args.arquivo)
+    docs, invalidos = ler_documentos(args.arquivo)
+    if invalidos:
+        exemplos = ", ".join(invalidos[:5])
+        print(f"{len(invalidos)} linhas ignoradas por documento invalido (ex.: {exemplos})", flush=True)
     feitos = ja_consultados(args.saida)
     fila = [d for d in docs if d not in feitos]
     print(f"{len(docs)} documentos, {len(feitos)} ja consultados, {len(fila)} na fila", flush=True)
