@@ -29,7 +29,12 @@ Ideal para ERPs, plataformas de emissao de NF-e, sistemas contabeis, agritechs e
 | `GET /api/perfil-produtor` | Perfil completo do produtor rural | [Ver docs](docs/endpoints/perfil-produtor.md) |
 | `GET /api/consultar-cnd` | CND Estadual (ICMS) por UF | [Ver docs](docs/endpoints/consultar-cnd.md) |
 | `GET /api/consultar-cnd-todos` | CND em todos os estados | [Ver docs](docs/endpoints/consultar-cnd-todos.md) |
+| `GET /api/consultar-cnd-federal` | CND Federal (Receita Federal + PGFN) | [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br) |
+| `GET /api/consultar-cndt` | CNDT trabalhista (TST) | [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br) |
+| `GET /api/consultar-crf-fgts` | CRF/FGTS (Caixa) | [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br) |
+| `GET /api/certidoes-todas` | Todas as certidoes (estaduais + federais) de uma vez | [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br) |
 | `GET /api/consultar-cnir` | Imoveis rurais CNIR/CAFIR | [Ver docs](docs/endpoints/consultar-cnir.md) |
+| `GET /api/consultar-sigef` | Parcelas SIGEF (INCRA) | [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br) |
 | `POST /api/consultar-nfe-xml` | XML completo (nfeProc) da NF-e pela chave de acesso, com o seu certificado A1 | [Ver pagina](https://fiscalapi.com.br/nfe-por-chave/) |
 
 ## Inicio Rapido
