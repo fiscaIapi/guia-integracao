@@ -96,7 +96,8 @@ curl -X GET "https://api.fiscalapi.com.br/api/consultar?uf=MT&cpf=12345678900" \
 | 400 | `PARAMETRO_AUSENTE` | Nenhum documento informado |
 | 400 | `PARAMETRO_CONFLITANTE` | Mais de um documento informado |
 | 400 | `DOCUMENTO_INVALIDO` | CPF, CNPJ ou IE com formato invalido |
-| 429 | `LIMITE_DEMO` | Limite de consultas demo atingido |
+| 402 | `LIMITE_ATINGIDO` | Creditos do mes esgotados |
+| 429 | `RATE_LIMIT_EXCEEDED` | Limite de requisicoes por minuto do plano excedido |
 | 502 | `CAPTCHA_FALHOU` | Falha na resolucao do CAPTCHA da SEFAZ |
 | 503 | `SITE_INDISPONIVEL` | Portal da SEFAZ fora do ar |
 

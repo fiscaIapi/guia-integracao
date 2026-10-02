@@ -29,12 +29,17 @@ Todos os erros da FiscalAPI seguem o mesmo formato JSON:
 | `DOCUMENTO_INVALIDO` | CPF, CNPJ ou IE com formato invalido |
 | `IE_NAO_SUPORTADO` | IE nao aceito neste endpoint (use CPF ou CNPJ) |
 
+### Creditos (HTTP 402)
+
+| Codigo | Descricao |
+|--------|-----------|
+| `LIMITE_ATINGIDO` | Creditos do mes esgotados. A resposta traz `usage`, `limit`, `extra_credits` e o `cost` da consulta |
+
 ### Rate Limiting (HTTP 429)
 
 | Codigo | Descricao |
 |--------|-----------|
-| `LIMITE_DEMO` | Limite de consultas demo atingido |
-| `RATE_LIMIT` | Limite do plano excedido |
+| `RATE_LIMIT_EXCEEDED` | Limite de requisicoes por minuto do plano excedido (Lite 5, Starter 20, Pro 60, Enterprise 120). Veja o header `Retry-After` |
 
 ### Fontes Externas (HTTP 502/503)
 

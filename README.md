@@ -30,12 +30,13 @@ Ideal para ERPs, plataformas de emissao de NF-e, sistemas contabeis, agritechs e
 | `GET /api/consultar-cnd` | CND Estadual (ICMS) por UF | [Ver docs](docs/endpoints/consultar-cnd.md) |
 | `GET /api/consultar-cnd-todos` | CND em todos os estados | [Ver docs](docs/endpoints/consultar-cnd-todos.md) |
 | `GET /api/consultar-cnir` | Imoveis rurais CNIR/CAFIR | [Ver docs](docs/endpoints/consultar-cnir.md) |
+| `POST /api/consultar-nfe-xml` | XML completo (nfeProc) da NF-e pela chave de acesso, com o seu certificado A1 | [Ver pagina](https://fiscalapi.com.br/nfe-por-chave/) |
 
 ## Inicio Rapido
 
 ### 1. Obtenha sua API Key
 
-Crie uma conta gratuita em [fiscalapi.com.br](https://fiscalapi.com.br) e gere sua chave de API no dashboard.
+Crie uma conta em [app.fiscalapi.com.br](https://app.fiscalapi.com.br), assine um plano (a API comeca no Lite, R$ 19,99/mes) e gere a chave em **Chave API** no painel. As 10 consultas gratis por mes da conta valem so no painel, sem API.
 
 ### 2. Faca sua primeira consulta
 
@@ -105,21 +106,26 @@ Detalhes completos em [docs/autenticacao.md](docs/autenticacao.md).
 
 ## Limites e Planos
 
-| Plano | Consultas/mes | Endpoints |
-|-------|---------------|-----------|
-| **Free** | 50 | Todos |
-| **Starter** | 500 | Todos |
-| **Pro** | 5.000 | Todos |
-| **Enterprise** | Sob consulta | Todos + SLA dedicado |
+| Plano | Preco | Creditos/mes | Requisicoes/min | Acesso |
+|-------|-------|--------------|-----------------|--------|
+| **Gratis** | R$ 0 | 10 consultas | — | So no painel: IE (uma UF por vez) e CNPJ. Sem API |
+| **Lite** | R$ 19,99/mes | 30 | 5 | Painel + API |
+| **Starter** | R$ 50/mes | 500 | 20 | Painel + API |
+| **Pro** | R$ 130/mes | 2.000 | 60 | Painel + API |
+| **Enterprise** | R$ 250/mes | 10.000 | 120 | Painel + API |
 
-Veja detalhes em [fiscalapi.com.br/precos](https://fiscalapi.com.br/precos).
+- A maioria das consultas consome 1 credito; NF-e por chave consome 3 (so quando o XML vem) e CNPJ ao vivo consome 3.
+- Consulta com erro da fonte nao cobra.
+- Creditos extras a partir do Starter: R$ 0,12 (Starter), R$ 0,07 (Pro) e R$ 0,02 (Enterprise) por credito. No Lite, o caminho e o upgrade.
+- Quando os creditos acabam, a API responde `402` com o codigo `LIMITE_ATINGIDO`.
+
+Tabela completa em [fiscalapi.com.br/precos](https://fiscalapi.com.br/precos/).
 
 ## Links
 
 - **Site**: [fiscalapi.com.br](https://fiscalapi.com.br)
 - **Documentacao completa**: [docs.fiscalapi.com.br](https://docs.fiscalapi.com.br)
 - **Dashboard**: [app.fiscalapi.com.br](https://app.fiscalapi.com.br)
-- **Status**: [status.fiscalapi.com.br](https://status.fiscalapi.com.br)
 - **Contato**: contato@fiscalapi.com.br
 
 ## Contribuicoes
